@@ -17,8 +17,12 @@ Content-Type: application/json
 
 {
     "username": "chidy",
-     "password": "password"
+     "password": "nigga"
 }
 ####
 GET http://localhost:8000/restricted HTTP/1.1 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imp1bWEiLCJpYXQiOjE3MjcxMzcwNjd9.Lyedhjcm5NmFxFRbyJj8juX5rkK1MsNx1YG2BzcwL-8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjFkMjFiMDI5NTFjZWZmMjdiNjBjMiIsInVzZXJuYW1lIjoiY2hpZHkiLCJpYXQiOjE3MjcxNjY5NTcsImV4cCI6MTcyNzE2Njk5N30.HCwYxXu7fW-PZmncO3wq_3CBq7FhoXuqpgRuJbb9KSM
+
+###
+GET http://localhost:8000/refresh HTTP/1.1 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjFkMjFiMDI5NTFjZWZmMjdiNjBjMiIsInVzZXJuYW1lIjoiY2hpZHkiLCJpYXQiOjE3MjcxNjY5ODEsImV4cCI6MTcyNzE2NzA0MX0.7iZpiNWhOPIKSXzDtffsSegb5o8FRowHMwq-bW7YdNs

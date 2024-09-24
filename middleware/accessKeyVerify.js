@@ -9,13 +9,13 @@ export const verifyAccesskey = async (req, res, next) => {
   // Get Access token from auth headers using Bearer 'token' format
   const access = authHeaders.split(" ")[1];
   if (!access) {
-    return res.stratus(403).json({ error: "access token required" });
+    return res.status(403).json({ error: "access token required" });
   }
   jwt.verify(access, SECRET_KEY, options, (err, decode) => {
     if (err) {
       return res.status(403).json({ error: err });
     } else {
-      req.user = decode;
+      req.user = { id: decode.id, username: decode.username };
       next();
     }
   });

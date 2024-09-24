@@ -53,11 +53,21 @@ auth.post("/login", async (req, res) => {
     if (match) {
       req.user = user;
       // generate auth tokens
-      const payload = { username };
-      const options = {};
-      const access = await jwt.sign(payload, SECRET_KEY, options);
-      const refresh = await jwt.sign(payload, REFRESH_SECRET_KEY, options);
-      return res.status(200).json({ message: "Logged in", access, refresh });
+      const payload = { id: user._id, username: user.username };
+      const accessOptions = { expiresIn: "40s" };
+      const refreshOptions = { expiresIn: "60s" };
+      const access = await jwt.sign(payload, SECRET_KEY, accessOptions);
+      const refresh = await jwt.sign(
+        payload,
+        REFRESH_SECRET_KEY,
+        refreshOptions
+      );
+      return res.status(200).json({
+        message: "Logged in",
+        user: payload,
+        access,
+        refresh
+      });
     } else {
       req.user = null;
       return res.status(403).json({ error: "Incorrect password" });
@@ -70,5 +80,40 @@ auth.post("/login", async (req, res) => {
 
 auth.get("/restricted", verifyAccesskey, (req, res) => {
   res.json({ user: req.user });
+});
+
+auth.get("/refresh", async (req, res) => {
+  const authHeaders = req.headers.authorization;
+  const options = {};
+  if (!authHeaders) {
+    return res.status(403).json({ error: "Authorization headers required" });
+  }
+  // Get Refresh token from auth headers using Bearer 'token' format
+  const refresh = authHeaders.split(" ")[1];
+  if (!refresh) {
+    return res.status(403).json({ error: "refresh token required" });
+  }
+  jwt.verify(refresh, REFRESH_SECRET_KEY, options, async (err, decode) => {
+    if (err) {
+      return res.status(403).json({ error: err });
+    } else {
+      const payload = { username: decode.username, id: decode.id };
+      const accessOptions = { expiresIn: "40s" };
+      const refreshOptions = { expiresIn: "60s" };
+      const access = await jwt.sign(payload, SECRET_KEY, accessOptions);
+      const refresh = await jwt.sign(
+        payload,
+        REFRESH_SECRET_KEY,
+        refreshOptions
+      );
+      return res
+        .status(201)
+        .json({
+          user: { id: decode.id, username: decode.username },
+          access,
+          refresh
+        });
+    }
+  });
 });
 export default auth;
