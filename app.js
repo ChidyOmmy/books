@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import { localDB, PORT } from "./config.js";
 import auth from "./routes/auth.js";
+import books from "./routes/books.js";
 import User from "./models/users.js";
 const app = express();
 
@@ -13,6 +14,8 @@ app.get("/", async (req, res) => {
   const users = await User.find({});
   res.status(200).json({ users: users });
 });
+
+app.use("/books", books);
 
 mongoose.connect(localDB).then(() => {
   console.log("Databse successfully connected..");

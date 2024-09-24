@@ -17,7 +17,7 @@ Content-Type: application/json
 
 {
     "username": "chidy",
-     "password": "nigga"
+     "password": "password"
 }
 ####
 GET http://localhost:8000/restricted HTTP/1.1 
@@ -25,4 +25,28 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjFkMjFiM
 
 ###
 GET http://localhost:8000/refresh HTTP/1.1 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjFkMjFiMDI5NTFjZWZmMjdiNjBjMiIsInVzZXJuYW1lIjoiY2hpZHkiLCJpYXQiOjE3MjcxNjY5ODEsImV4cCI6MTcyNzE2NzA0MX0.7iZpiNWhOPIKSXzDtffsSegb5o8FRowHMwq-bW7YdNs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjFkMjFiMDI5NTFjZWZmMjdiNjBjMiIsInVzZXJuYW1lIjoiY2hpZHkiLCJpYXQiOjE3MjcxNjY5ODEsImV4cCI6MTcyNzE2NzA0MX0.7iZpiNWhOPIKSXzDtffsSegb5o8FRowHMwq-bW7YdNs 
+
+###
+
+GET http://localhost:8000/books 
+
+### 
+
+POST http://localhost:8000/books/create 
+Content-Type: application/json
+
+{
+    "title": "Moon",
+    "authorId": "66f1d21b02951ceff27b60c2"
+}
+
+### 
+
+PUT http://localhost:8000/books/add-authors 
+Content-Type: application/json
+
+{
+    "bookId": "66f33593599df036bdae6b76",
+    "authors": ["66f1d150e810505121a22c87","66f1c845bee4fdbd15fcb5a4","66f1d12de810505121a22c82"]
+}
