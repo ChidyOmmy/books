@@ -1,4 +1,7 @@
 
+GET http://localhost:8000/
+
+###
 
 POST http://localhost:8000/register
 Content-Type: application/json
@@ -9,3 +12,13 @@ Content-Type: application/json
 }
 
 ###
+POST http://localhost:8000/login
+Content-Type: application/json
+
+{
+    "username": "chidy",
+     "password": "password"
+}
+####
+GET http://localhost:8000/restricted HTTP/1.1 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imp1bWEiLCJpYXQiOjE3MjcxMzcwNjd9.Lyedhjcm5NmFxFRbyJj8juX5rkK1MsNx1YG2BzcwL-8

@@ -2,15 +2,16 @@ import express from "express";
 import mongoose from "mongoose";
 import { localDB, PORT } from "./config.js";
 import auth from "./routes/auth.js";
-
+import User from "./models/users.js";
 const app = express();
 
 app.use(express.json());
 
 app.use(auth);
 
-app.get("/", (req, res) => {
-  res.send({ message: "Hello world" });
+app.get("/", async (req, res) => {
+  const users = await User.find({});
+  res.status(200).json({ users: users });
 });
 
 mongoose.connect(localDB).then(() => {
