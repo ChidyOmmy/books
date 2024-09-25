@@ -7,8 +7,8 @@ POST http://localhost:8000/register
 Content-Type: application/json
 
 {
-    "username": "Chidy",
-     "password": "password"
+    "username": "jane",
+     "password": "doe"
 }
 
 ###
@@ -16,8 +16,8 @@ POST http://localhost:8000/login
 Content-Type: application/json
 
 {
-    "username": "chidy",
-     "password": "password"
+    "username": "john",
+     "password": "doe"
 }
 ####
 GET http://localhost:8000/restricted HTTP/1.1 
@@ -37,8 +37,8 @@ POST http://localhost:8000/books/create
 Content-Type: application/json
 
 {
-    "title": "Moon",
-    "authorId": "66f1d21b02951ceff27b60c2"
+    "title": "House",
+    "authorId": "66f358321f1b334e9f65fdd0"
 }
 
 ### 
@@ -47,6 +47,10 @@ PUT http://localhost:8000/books/add-authors
 Content-Type: application/json
 
 {
-    "bookId": "66f33593599df036bdae6b76",
+    "bookId": "66f358561f1b334e9f65fdd2",
     "authors": ["66f1d150e810505121a22c87","66f1c845bee4fdbd15fcb5a4","66f1d12de810505121a22c82"]
 }
+
+###
+
+GET http://localhost:8000/books/66f358561f1b334e9f65fdd2

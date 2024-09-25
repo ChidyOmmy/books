@@ -1,6 +1,6 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import User from "../models/users.js";
+import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import { SECRET_KEY, REFRESH_SECRET_KEY } from "../config.js";
 import { verifyAccesskey } from "../middleware/accessKeyVerify.js";
@@ -106,13 +106,11 @@ auth.get("/refresh", async (req, res) => {
         REFRESH_SECRET_KEY,
         refreshOptions
       );
-      return res
-        .status(201)
-        .json({
-          user: { id: decode.id, username: decode.username },
-          access,
-          refresh
-        });
+      return res.status(201).json({
+        user: { id: decode.id, username: decode.username },
+        access,
+        refresh
+      });
     }
   });
 });

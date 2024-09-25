@@ -1,6 +1,6 @@
 import express from "express";
 import Book from "../models/bookModel.js";
-import User from "../models/users.js";
+import User from "../models/userModel.js";
 
 const books = express.Router();
 
@@ -47,20 +47,18 @@ books.put("/add-authors", async (req, res) => {
   try {
     const book = await Book.findById(bookId);
 
+    //   If authors is an array, proccess all in parallel
     if (authors.constructor == Array) {
-      authors.map(async (author) => {
-        try {
-          author = await User.findById(author);
-          book.authors.push(author._id);
-        } catch (error) {
-          return res.status(404).json(error);
-        }
+      const authorsPromises = authors.map(async (authorId) => {
+        const author = await User.findById(authorId);
+        if (!author) throw new Error(`${authorID} not found`);
+        return author._id;
       });
+      const authorIds = await Promise.all(authorsPromises);
+      book.authors.push(...authorIds);
     } else {
-      console.log(authors);
       try {
         const author = await User.findById(authors);
-        console.log(author);
         book.authors.push(author._id);
       } catch (error) {
         return res.status(404).json({ error });
@@ -76,6 +74,18 @@ books.put("/add-authors", async (req, res) => {
     }
   } catch (error) {
     return res.status(404).json(error);
+  }
+});
+books.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const book = await Book.findById(id)
+      .populate("authors", "username _id")
+      .exec();
+    console.log(book.authors);
+    return res.status(200).json({ book });
+  } catch (error) {
+    return res.status(404).json({ error });
   }
 });
 export default books;
