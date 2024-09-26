@@ -1,14 +1,21 @@
 import express from "express";
 import Book from "../models/bookModel.js";
 import User from "../models/userModel.js";
-
+import actions from "./bookActions.js";
+import multer from "multer";
 const books = express.Router();
+
+const upload = multer({ dest: "./media" });
+
+books.post("/file", upload.single("avatar"), (req, res, next) => {
+  console.log(req.file);
+  res.send("File uploaded");
+});
 
 books.get("/", async (req, res) => {
   const books = await Book.find();
   res.status(200).json({ books });
 });
-
 books.post("/create", async (req, res) => {
   const { title, authorId } = req.body;
   const requiredFields = title && authorId;
@@ -88,4 +95,6 @@ books.get("/:id", async (req, res) => {
     return res.status(404).json({ error });
   }
 });
+
+books.use(actions);
 export default books;

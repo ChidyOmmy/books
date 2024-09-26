@@ -54,3 +54,40 @@ Content-Type: application/json
 ###
 
 GET http://localhost:8000/books/66f358561f1b334e9f65fdd2
+###
+
+POST http://localhost:8000/books/66f358561f1b334e9f65fdd2/like 
+Content-Type: application/json
+
+{
+    "userId": "66f1d12de810505121a22c82"
+}
+###
+
+POST http://localhost:8000/books/66f358561f1b334e9f65fdd2/favorite 
+Content-Type: application/json
+
+{
+    "userId": "66f1d12de810505121a22c82"
+}
+###
+
+POST http://localhost:8000/books/66f358561f1b334e9f65fdd2/comment
+Content-Type: application/json
+
+{
+    "userId": "66f1d12de810505121a22c82",
+    "text": "Second comment"
+}
+
+###
+
+POST http://localhost:8000/books/file
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="file.png"
+Content-Type: image/png
+
+< ./utils/file.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
