@@ -3,28 +3,48 @@ import Book from "../models/bookModel.js";
 import User from "../models/userModel.js";
 import actions from "./bookActions.js";
 import multer from "multer";
+import path from "path";
+
 const books = express.Router();
 
-const upload = multer({ dest: "./media" });
-
-books.post("/file", upload.single("avatar"), (req, res, next) => {
-  console.log(req.file);
-  res.send("File uploaded");
+// Set the storage engine
+const storage = multer.diskStorage({
+  destination: "./media",
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + Math.random() + path.extname(file.originalname));
+  }
 });
+const upload = multer({
+  storage,
+  limits: { fileSize: 10000000 },
+  fileFilter: function (req, file, cb) {
+    // Check the file type
+    const filetypes = /jpeg|jpg|gif|png/;
+    const extname = filetypes.test(path.extname(file.originalname));
+    const mimetype = filetypes.test(file.mimetype);
+
+    if (extname && mimetype) {
+      return cb(null, true);
+    } else {
+      cb("Error: Images only");
+    }
+  }
+}).single("cover");
 
 books.get("/", async (req, res) => {
   const books = await Book.find();
   res.status(200).json({ books });
 });
-books.post("/create", async (req, res) => {
+books.post("/create", upload, async (req, res) => {
   const { title, authorId } = req.body;
   const requiredFields = title && authorId;
-
+  console.log(req.file);
+  if (!req.file) return res.status(400).json({ error: "a cover is required" });
   if (!requiredFields) {
     return res.status(400).json({ error: "Fill alll the required fields" });
   }
-
-  const book = await Book.create({ title });
+  const cover = "images/" + req.file.filename;
+  const book = await Book.create({ title, cover });
   const author = await User.findById(authorId);
 
   if (book && author) {

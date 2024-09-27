@@ -33,16 +33,6 @@ GET http://localhost:8000/books
 
 ### 
 
-POST http://localhost:8000/books/create 
-Content-Type: application/json
-
-{
-    "title": "House",
-    "authorId": "66f358321f1b334e9f65fdd0"
-}
-
-### 
-
 PUT http://localhost:8000/books/add-authors 
 Content-Type: application/json
 
@@ -82,11 +72,20 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:8000/books/file
+POST http://localhost:8000/books/create
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Accept: application/json
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="avatar"; filename="file.png"
+Content-Disposition: form-data; name="title"
+
+House
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="authorId"
+
+66f358321f1b334e9f65fdd0
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="cover"; filename="file.png"
 Content-Type: image/png
 
 < ./utils/file.png
