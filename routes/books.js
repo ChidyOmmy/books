@@ -3,6 +3,7 @@ import Book from "../models/bookModel.js";
 import User from "../models/userModel.js";
 import actions from "./bookActions.js";
 import multer from "multer";
+import mongoose from "mongoose";
 import path from "path";
 
 const books = express.Router();
@@ -32,13 +33,28 @@ const upload = multer({
 }).single("cover");
 
 books.get("/", async (req, res) => {
-  const books = await Book.find();
-  res.status(200).json({ books });
+  let limit = parseInt(req.query.limit);
+  console.log(limit);
+  if (limit < 1 || isNaN(limit)) limit = 2;
+  const books = await Book.aggregate([
+    { $match: {} },
+    {
+      $project: {
+        title: 1,
+        authors: 1,
+        cover: 1,
+        likeCount: { $size: "$likes" },
+        commentsCount: { $size: "$comments" }
+      }
+    },
+    { $limit: limit }
+  ]);
+  return res.status(200).json({ books });
 });
+
 books.post("/create", upload, async (req, res) => {
   const { title, authorId } = req.body;
   const requiredFields = title && authorId;
-  console.log(req.file);
   if (!req.file) return res.status(400).json({ error: "a cover is required" });
   if (!requiredFields) {
     return res.status(400).json({ error: "Fill alll the required fields" });
@@ -107,9 +123,8 @@ books.get("/:id", async (req, res) => {
   const id = req.params.id;
   try {
     const book = await Book.findById(id)
-      .populate("authors", "username _id")
+      .populate("authors comments", "username _id text")
       .exec();
-    console.log(book.authors);
     return res.status(200).json({ book });
   } catch (error) {
     return res.status(404).json({ error });

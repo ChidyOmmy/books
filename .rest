@@ -7,8 +7,8 @@ POST http://localhost:8000/register
 Content-Type: application/json
 
 {
-    "username": "jane",
-     "password": "doe"
+    "username": "chidy",
+     "password": "ommy"
 }
 
 ###
@@ -16,58 +16,57 @@ POST http://localhost:8000/login
 Content-Type: application/json
 
 {
-    "username": "john",
-     "password": "doe"
+    "username": "chidy",
+     "password": "ommy"
 }
 ####
 GET http://localhost:8000/restricted HTTP/1.1 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjFkMjFiMDI5NTFjZWZmMjdiNjBjMiIsInVzZXJuYW1lIjoiY2hpZHkiLCJpYXQiOjE3MjcxNjY5NTcsImV4cCI6MTcyNzE2Njk5N30.HCwYxXu7fW-PZmncO3wq_3CBq7FhoXuqpgRuJbb9KSM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjMzZmE5YTc3MjgyMzIzYmFlNGMzYiIsInVzZXJuYW1lIjoiam9obiIsImlhdCI6MTcyNzQ2ODk2NCwiZXhwIjoxNzI3NDY5MDA0fQ.G-EWjIcMmGv1ds9jdKXhyot6PTAANLiGQc_Gy8nvbNs
 
 ###
 GET http://localhost:8000/refresh HTTP/1.1 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjFkMjFiMDI5NTFjZWZmMjdiNjBjMiIsInVzZXJuYW1lIjoiY2hpZHkiLCJpYXQiOjE3MjcxNjY5ODEsImV4cCI6MTcyNzE2NzA0MX0.7iZpiNWhOPIKSXzDtffsSegb5o8FRowHMwq-bW7YdNs 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjcxNTcyMWVlNzEzMTNlODlmMDI3ZSIsInVzZXJuYW1lIjoibWltaSIsImlhdCI6MTcyNzQ2OTAwMiwiZXhwIjoxNzI3NDY5MDYyfQ.MGnepOFnt1jqQFDdfsxFPY6qTBshqMd732dMWtno6e8
 
 ###
 
-GET http://localhost:8000/books 
+GET http://localhost:8000/books?limit=5
 
-### 
-
+###
 PUT http://localhost:8000/books/add-authors 
 Content-Type: application/json
 
 {
-    "bookId": "66f358561f1b334e9f65fdd2",
-    "authors": ["66f1d150e810505121a22c87","66f1c845bee4fdbd15fcb5a4","66f1d12de810505121a22c82"]
+    "bookId": "66f7396b24d7943bc06acfe5",
+    "authors": ["66f7391424d7943bc06acfe0"]
 }
 
 ###
 
-GET http://localhost:8000/books/66f358561f1b334e9f65fdd2
-###
+GET http://localhost:8000/books/66f73ca324d7943bc06acfef
 
-POST http://localhost:8000/books/66f358561f1b334e9f65fdd2/like 
+###
+POST http://localhost:8000/books/66f7396b24d7943bc06acfe5/like 
 Content-Type: application/json
 
 {
-    "userId": "66f1d12de810505121a22c82"
+    "userId": "66f7391424d7943bc06acfe0"
 }
 ###
 
-POST http://localhost:8000/books/66f358561f1b334e9f65fdd2/favorite 
+POST http://localhost:8000/books/66f7396b24d7943bc06acfe5/favorite 
 Content-Type: application/json
 
 {
-    "userId": "66f1d12de810505121a22c82"
+    "userId": "66f7391424d7943bc06acfe0"
 }
 ###
 
-POST http://localhost:8000/books/66f358561f1b334e9f65fdd2/comment
+POST http://localhost:8000/books/66f73ca324d7943bc06acfef/comment
 Content-Type: application/json
 
 {
-    "userId": "66f1d12de810505121a22c82",
-    "text": "Second comment"
+    "userId": "66f7391424d7943bc06acfe0",
+    "text": "second comment"
 }
 
 ###
@@ -79,11 +78,11 @@ Accept: application/json
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="title"
 
-House
+Pluto
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="authorId"
 
-66f358321f1b334e9f65fdd0
+66f7391424d7943bc06acfe0
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="cover"; filename="file.png"
 Content-Type: image/png
