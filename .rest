@@ -7,8 +7,7 @@ POST http://localhost:8000/register
 Content-Type: application/json
 
 {
-    "username": "chidy",
-     "password": "ommy"
+    "username": "chidy"
 }
 
 ###
@@ -66,7 +65,7 @@ Content-Type: application/json
 
 {
     "userId": "66f7391424d7943bc06acfe0",
-    "text": "second comment"
+    "text": "new comment"
 }
 
 ###
