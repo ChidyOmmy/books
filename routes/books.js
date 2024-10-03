@@ -34,10 +34,14 @@ const upload = multer({
 
 books.get("/", async (req, res) => {
   let limit = parseInt(req.query.limit);
-  console.log(limit);
-  if (limit < 1 || isNaN(limit)) limit = 2;
+  let skip = parseInt(req.query.skip);
+  if (limit < 1 || isNaN(limit)) limit = 3;
+  if (isNaN(skip) || skip < 1) skip = 1;
+
+  const booksCount = await Book.countDocuments({});
   const books = await Book.aggregate([
     { $match: {} },
+    { $skip: (skip - 1) * 3 },
     {
       $project: {
         title: 1,
@@ -47,9 +51,15 @@ books.get("/", async (req, res) => {
         commentsCount: { $size: "$comments" }
       }
     },
+    {
+      $sort: {
+        likeCount: -1,
+        commentsCount: -1
+      }
+    },
     { $limit: limit }
   ]);
-  return res.status(200).json({ books });
+  return res.status(200).json({ booksCount, books });
 });
 
 books.post("/create", upload, async (req, res) => {
@@ -59,7 +69,7 @@ books.post("/create", upload, async (req, res) => {
   if (!requiredFields) {
     return res.status(400).json({ error: "Fill alll the required fields" });
   }
-  const cover = "images/" + req.file.filename;
+  const cover = req.file.filename;
   const book = await Book.create({ title, cover });
   const author = await User.findById(authorId);
 
