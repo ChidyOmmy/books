@@ -39,6 +39,20 @@ books.get("/", async (req, res) => {
   if (isNaN(skip) || skip < 1) skip = 1;
 
   const booksCount = await Book.countDocuments({});
+  const popularBooks = await Book.aggregate([
+    { $match: {} },
+    {
+      $project: {
+        title: 1,
+        authors: 1,
+        cover: 1,
+        likeCount: { $size: "$likes" },
+        commentsCount: { $size: "$comments" }
+      }
+    },
+    { $sort: { likeCount: -1, commentsCount: -1 } },
+    { $limit: 2 }
+  ]);
   const books = await Book.aggregate([
     { $match: {} },
     { $skip: (skip - 1) * 3 },
@@ -51,15 +65,9 @@ books.get("/", async (req, res) => {
         commentsCount: { $size: "$comments" }
       }
     },
-    {
-      $sort: {
-        likeCount: -1,
-        commentsCount: -1
-      }
-    },
     { $limit: limit }
   ]);
-  return res.status(200).json({ booksCount, books });
+  return res.status(200).json({ booksCount, books, popularBooks });
 });
 
 books.post("/create", upload, async (req, res) => {

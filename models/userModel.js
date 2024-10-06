@@ -4,6 +4,7 @@ const { Schema, model } = mongoose;
 
 const userSchema = Schema(
   {
+    fullname: { type: String, required: true },
     username: { type: String, required: true, lowercase: true },
     password: { type: String, required: true },
     likedBooks: [{ type: Schema.Types.ObjectId, ref: "Book" }],
@@ -12,7 +13,9 @@ const userSchema = Schema(
   {
     statics: {
       usernameExists: function (username) {
-        return this.findOne({ username: { $regex: username, $options: "i" } });
+        return this.countDocuments({
+          username: { $regex: `^${username}$`, $options: "i" }
+        });
       }
     }
   }

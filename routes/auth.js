@@ -8,11 +8,25 @@ import { verifyAccesskey } from "../middleware/accessKeyVerify.js";
 const salt = 10;
 const auth = express.Router();
 
+auth.get("/usernamecheck/:username", async (req, res) => {
+  const { username } = req.params;
+  try {
+    const usernameExists = await User.usernameExists(username);
+    if (usernameExists) {
+      res.status(200).json({ available: true });
+    } else {
+      res.status(200).json({ available: false });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
 auth.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-  const requiredFields = username && password;
+  const { username, password, fullname } = req.body;
+  const requiredFields = username && password && fullname;
   if (!requiredFields) {
-    return res.status(400).json({ message: "Fill in all required fields" });
+    return res.status(400).json({ error: "Fill in all required fields" });
   }
   // check if username exists
   if (username) {
@@ -27,10 +41,28 @@ auth.post("/register", async (req, res) => {
 
   // Hash password
   bcrypt.hash(password, salt, async (err, hash) => {
-    await User.create({ username, password: hash })
-      .then((user) => {
-        res.status(201).json(user);
-        console.log(`Successfully created a new user ${user}`);
+    await User.create({ username, fullname, password: hash })
+      .then(async (user) => {
+        // generate auth tokens
+        const payload = { id: user._id, username: user.username };
+        const accessOptions = { expiresIn: "40s" };
+        const refreshOptions = { expiresIn: "60s" };
+        const access = await jwt.sign(payload, SECRET_KEY, accessOptions);
+        const refresh = await jwt.sign(
+          payload,
+          REFRESH_SECRET_KEY,
+          refreshOptions
+        );
+        res.status(201).json({
+          user: {
+            fullname: user.fullname,
+            username: user.username,
+            id: user._id,
+            access,
+            refresh
+          }
+        });
+        console.log(`Successfully created a new user ${user.username}`);
       })
       .catch((err) => {
         return res.status(400).json({ error: err });
@@ -43,7 +75,7 @@ auth.post("/login", async (req, res) => {
   const { username, password } = req.body;
   const requiredFields = username && password;
   if (!requiredFields) {
-    return res.status(400).json({ message: "Fill in all required fields" });
+    return res.status(400).json({ error: "Fill in all required fields" });
   }
   // Find User
   const user = await User.findOne({ username: username.toLowerCase() });
