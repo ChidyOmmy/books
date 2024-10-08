@@ -45,8 +45,8 @@ auth.post("/register", async (req, res) => {
       .then(async (user) => {
         // generate auth tokens
         const payload = { id: user._id, username: user.username };
-        const accessOptions = { expiresIn: "40s" };
-        const refreshOptions = { expiresIn: "60s" };
+        const accessOptions = { expiresIn: "2m" };
+        const refreshOptions = { expiresIn: "1days" };
         const access = await jwt.sign(payload, SECRET_KEY, accessOptions);
         const refresh = await jwt.sign(
           payload,
@@ -65,7 +65,9 @@ auth.post("/register", async (req, res) => {
         console.log(`Successfully created a new user ${user.username}`);
       })
       .catch((err) => {
-        return res.status(400).json({ error: err });
+        console.log(err);
+        return res.status(500).json({ error: `Internal server error` });
+        // logg the error
       });
   });
 });
@@ -96,9 +98,7 @@ auth.post("/login", async (req, res) => {
       );
       return res.status(200).json({
         message: "Logged in",
-        user: payload,
-        access,
-        refresh
+        user: {...payload,fullname:user.fullname,access, refresh},
       });
     } else {
       req.user = null;
@@ -130,8 +130,8 @@ auth.get("/refresh", async (req, res) => {
       return res.status(403).json({ error: err });
     } else {
       const payload = { username: decode.username, id: decode.id };
-      const accessOptions = { expiresIn: "40s" };
-      const refreshOptions = { expiresIn: "60s" };
+      const accessOptions = { expiresIn: "2m" };
+      const refreshOptions = { expiresIn: "1days" };
       const access = await jwt.sign(payload, SECRET_KEY, accessOptions);
       const refresh = await jwt.sign(
         payload,
