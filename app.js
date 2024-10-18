@@ -15,10 +15,23 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(auth);
+
 app.get("/", async (req, res) => {
-  const users = await User.find().select("-password -__v");
+  const search = req.query.search || "";
+
+  const users = await User.aggregate([
+    { $match: { username: { $regex: search, $options: "i" } } },
+    {
+      $project: {
+        username: 1,
+        fullname: 1
+      }
+    },
+    { $limit: 10 }
+  ]);
   res.status(200).json({ users: users });
 });
+
 app.use(express.static("media"));
 app.use("/books", books);
 

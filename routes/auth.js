@@ -130,8 +130,8 @@ auth.get("/refresh", async (req, res) => {
       return res.status(403).json({ error: err });
     } else {
       const payload = { username: decode.username, id: decode.id };
-      const accessOptions = { expiresIn: "2m" };
-      const refreshOptions = { expiresIn: "1days" };
+      const accessOptions = { expiresIn: "1h" };
+      const refreshOptions = { expiresIn: "5days" };
       const access = await jwt.sign(payload, SECRET_KEY, accessOptions);
       const refresh = await jwt.sign(
         payload,

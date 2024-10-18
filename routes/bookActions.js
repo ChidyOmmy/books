@@ -3,10 +3,11 @@ import Book from "../models/bookModel.js";
 import User from "../models/userModel.js";
 import Comment from "../models/commentModel.js";
 import mongoose from "mongoose";
+import { verifyAccesskey } from "../middleware/accessKeyVerify.js";
 
 const actions = express.Router();
 
-actions.post("/:id/like", async (req, res) => {
+actions.post("/:id/like",verifyAccesskey, async (req, res) => {
   const bookId = req.params.id;
   const { userId } = req.body;
   if (!(userId && bookId))
@@ -20,14 +21,14 @@ actions.post("/:id/like", async (req, res) => {
   if (!(book && user))
     return res.status(404).json({ error: "Not found, try again" });
   let message;
-  if (!book.likes.includes(user._id)) {
+  if (!user.favorites.includes(book._id)) {
     message = "added to liked books";
-    book.likes.push(user._id);
+    user.favorites.push(book._id);
     user.likedBooks.push(book._id);
   } else {
     message = "removed from liked books";
-    book.likes = book.likes.filter(
-      (id) => id.toString() !== user._id.toString()
+    user.favorites = user.favorites.filter(
+      (id) => id.toString() !== book._id.toString()
     );
     user.likedBooks = user.likedBooks = user.likedBooks.filter(
       (id) => id.toString() !== book._id.toString()
@@ -43,7 +44,7 @@ actions.post("/:id/like", async (req, res) => {
   }
 });
 
-actions.post("/:id/favorite", async (req, res) => {
+actions.post("/:id/favorite",verifyAccesskey, async (req, res) => {
   const bookId = req.params.id;
   const { userId } = req.body;
   if (!(userId && bookId))
@@ -53,15 +54,15 @@ actions.post("/:id/favorite", async (req, res) => {
   if (!mongoose.isValidObjectId(bookId))
     return res.status(400).json({ error: "Invalid ObjectId for Book" });
   const book = await Book.findById(bookId);
-  const user = await User.findById(userId).select("-password");
+  const user = await User.findById(userId);
   if (!(book && user))
     return res.status(404).json({ error: "Not found, try again" });
   let message;
   if (!user.favorites.includes(book._id)) {
-    message = "added  book to favorites";
+    message = "added to favorite books";
     user.favorites.push(book._id);
   } else {
-    message = "removed book from favorites";
+    message = "removed from favorite books";
     user.favorites = user.favorites.filter(
       (id) => id.toString() !== book._id.toString()
     );
@@ -69,15 +70,16 @@ actions.post("/:id/favorite", async (req, res) => {
 
   try {
     user.save();
-    return res.status(201).json({ message, user });
+    return res.status(201).json({ message, user: user.favorites });
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-actions.post("/:id/comment", async (req, res) => {
+actions.post("/:id/comment",verifyAccesskey, async (req, res) => {
   const bookId = req.params.id;
   const { userId, text } = req.body;
+  console.log(bookId,userId,text)
   if (!(userId && text && bookId))
     return res.status(400).json({ error: "Fill in all required fields" });
   if (!mongoose.isValidObjectId(userId))
@@ -99,10 +101,24 @@ actions.post("/:id/comment", async (req, res) => {
     await comment.save();
     book.comments.push(comment._id);
     await book.save();
-    return res.status(201).json({ message: "comment added to book", comment });
+    const new_comment = await Comment.findById(comment._id).populate('book user', 'title username')
+    return res.status(201).json({ message: "comment added to book", comment: new_comment });
   } catch (error) {
     res.status(500).json(error);
   }
 });
+
+actions.get("/:id/comments", async(req,res)=>{
+
+  const bookId = req.params.id;
+  
+  if (!mongoose.isValidObjectId(bookId))
+    return res.status(400).json({ error: "Invalid ObjectId for Book" });
+  const book = await Book.findById(bookId);
+  if (!(book))
+    return res.status(404).json({ error: "Not found, try again" });
+  const comments = await Comment.find({book: book._id}).populate('book user', 'title username')
+  res.status(200).json({comments})
+})
 
 export default actions;

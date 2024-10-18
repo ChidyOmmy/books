@@ -13,7 +13,7 @@ export const verifyAccesskey = async (req, res, next) => {
   }
   jwt.verify(access, SECRET_KEY, options, (err, decode) => {
     if (err) {
-      return res.status(403).json({ error: err });
+      return res.status(403).json({ error: err.message, err });
     } else {
       req.user = { id: decode.id, username: decode.username };
       next();
